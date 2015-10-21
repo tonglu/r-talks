@@ -152,7 +152,9 @@ Connecting S3 to R
 
 ```r
 obj <- list(
-  atomic_vector = 1:10, external_object = ptr_to_c_object)
+  atomic_vector = 1:10,
+  external_object = ptr_to_c_object
+)
 attr(obj, "s3mpi.serialize") <- list(
   "write" = function(object) {
      obj$external_object <- convert_ptr_to_raw_vector(obj$external_object)
@@ -161,6 +163,114 @@ attr(obj, "s3mpi.serialize") <- list(
      obj$external_object <- convert_raw_vector_to_ptr(obj$external_object)
   })
 ```
+
+Some implementation details
+========================================================
+
+```r
+# s3mpi/R/s3normalize.R
+s3normalize <- function(object, read = TRUE) {
+  if (read) {
+    (attr(object, "s3mpi.serialize")$read %||% identity)(object)
+  } else {
+    (attr(object, "s3mpi.serialize")$write %||% identity)(object)
+  }
+}
+```
+
+Some implementation details
+========================================================
+
+```r
+# s3mpi/R/s3read.R
+s3read <- function(name, path = s3path(), cache = TRUE, ...) {
+  if (!isTRUE(cache) || is.null(getOption("s3mpi.cache"))) {
+    value <- s3.get(s3key, ...)
+  } else if (is.not_cached(value <- s3cache(s3key))) {
+    value <- s3.get(s3key, ...)
+    s3cache(s3key, value)
+  }
+  s3normalize(value, TRUE)
+}
+```
+Some implementation details
+========================================================
+
+```r
+# s3mpi/R/s3get.R
+s3.get <- function (path) {
+  file <- tempfile()
+  on.exit(unlink(file), add = TRUE)
+  # Replace with your favorite cloud backend.
+  s3.cmd <- paste("s3cmd get", path, file)
+  system(s3.cmd)
+  readRDS(s3.cmd)
+}
+```
+
+Many use cases
+========================================================
+
+* Light-weight mapreduce
+
+Many use cases
+========================================================
+
+* Light-weight mapreduce
+* Logging supplementation (with chat notifications!)
+
+Many use cases
+========================================================
+
+* Light-weight mapreduce
+* Logging supplementation (with chat notifications!)
+* Caching of functions (github.com/peterhurford/s3memoize)
+
+Many use cases
+========================================================
+
+* Light-weight mapreduce
+* Logging supplementation (with chat notifications!)
+* Caching of functions (github.com/peterhurford/s3memoize)
+* Debugging
+
+Many use cases
+========================================================
+
+* Light-weight mapreduce
+* Logging supplementation (with chat notifications!)
+* Caching of functions (github.com/peterhurford/s3memoize)
+* Debugging
+* Chat collaboration "hey can you send me the IDs of the customers with
+  the duplicate leads records?"
+
+Many use cases
+========================================================
+
+* Light-weight mapreduce
+* Logging supplementation (with chat notifications!)
+* Caching of functions (github.com/peterhurford/s3memoize)
+* Debugging
+* Chat collaboration "hey can you send me the IDs of the customers with
+  the duplicate leads records?"
+* Interfacing with production:
+   - Ruby S3MPI: github.com/robertzk/s3mpi-ruby
+   - Python S3MPI: github.com/robertzk/s3mpy
+
+Many use cases
+========================================================
+
+* Light-weight mapreduce
+* Logging supplementation (with chat notifications!)
+* Caching of functions (github.com/peterhurford/s3memoize)
+* Debugging
+* Chat collaboration "hey can you send me the IDs of the customers with
+  the duplicate leads records?"
+* Interfacing with production:
+   - Ruby S3MPI: github.com/robertzk/s3mpi-ruby
+   - Python S3MPI: github.com/robertzk/s3mpy
+* Reproducible reports: at Avant we use this to store all information
+  about trained models since the beginning of time.
 
 The future
 ========================================================
@@ -171,3 +281,12 @@ The future
 - How much life can you save with as little code as possible?
 
 ![the future](the_future.jpg)
+
+The future
+========================================================
+
+- http://github.com/robertzk/s3mpi
+
+![avant](avant.gif)
+
+
