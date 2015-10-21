@@ -9,6 +9,7 @@ The problem
 Quick and iterative data science workflows require constant **sharing**
 and **collaboration**.
 
+![avant](avant.gif)
 
 The problem
 ========================================================
@@ -57,7 +58,7 @@ http://github.com/robertzk/s3mpi
 Rob's R session: 
 
 ```r
-s3store(c(data = iris, label = "Iris), "iris")
+s3store(c(data = iris, label = "Iris"), "iris")
 ```
 
 
@@ -69,7 +70,7 @@ http://github.com/robertzk/s3mpi
 Rob's R session: 
 
 ```r
-s3store(c(data = iris, label = "Iris), "iris")
+s3store(c(data = iris, label = "Iris"), "iris")
 ```
 Tong's R session (1 second later):
 
@@ -106,7 +107,7 @@ Rob's R session:
 
 ```r
 s3store(function(skip, hop) skip + 2 * hop,
-        "a_skip_and_two_hops"")
+        "a_skip_and_two_hops")
 ```
 
 Connecting S3 to R
